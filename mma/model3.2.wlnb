@@ -1,0 +1,33 @@
+{
+ "cells": [
+  {
+   "kind": 2,
+   "value": "\n",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1693983033786,
+     "endTime": 1693983396322
+    },
+    "success": false
+   }
+  },
+  {
+   "kind": 2,
+   "value": "SendToLink[link, \"import numpy as np\"]\nSendToLink[link, \"x = np.arange(10)\"]\nSendToLink[link, \"y = x ** 2\"]\nx = ReceiveFromLink[link, \"x\"]\ny = ReceiveFromLink[link, \"y\"]\n",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1693987040005,
+     "endTime": 1693987040005
+    },
+    "success": false
+   }
+  }
+ ]
+}
