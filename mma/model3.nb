@@ -1,0 +1,191 @@
+(* Initialize parameters *)
+
+X1 = 0;
+X2 = 2;
+Y1 = X2 + 0.01;
+Y2 = 30 + 0.01;
+
+(* Generate x, y meshgrid *)
+n = (X2 - X1)*1000 + 1;
+m = (Y2 - Y1)*100 + 1;
+
+hx = (X2 - X1)/(n - 1);
+hy = (Y2 - Y1)/(m - 1);
+
+x = Range[X1, X2, hx];
+y = Range[Y1, Y2, hy];
+
+(* Define test functions *)
+fV1 = 0.22; m1 = 0.78; gamma1 = 0.15;
+fV2 = 0.19; m2 = 1.46; gamma2 = 0.4;
+fV3 = 0.14; m3 = 1.72; gamma3 = 0.25;
+fV4 = 0.14; m4 = 1.90; gamma4 = 0.1;
+
+(* f is the main function, f1-f4 are components *)
+f[x_, M_, G_, F_] := F^2*((M^4 + M^2*G^2)/(24*π*((x - M^2)^2 + M^2*G^2)));
+
+f1 = f[x, m1, gamma1, 1];
+f2 = f[x, m2, gamma2, 1];
+f3 = f[x, m3, gamma3, 1];
+f4 = f[x, m4, gamma4, 1];
+
+F = f1 + f2 + f3 + f4;
+
+(* Compute F1, F2 components and integral operators G1, G2 *)
+F1 = f1;
+G1 = Table[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}], {i, m}];
+
+F2 = f2[x];
+G2 = Table[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}], {i, m}];
+
+(* Define true solution with some noise *)
+B1 = 1; B2 = 2;
+XD = 1.01;
+b1 = XD*B1; b2 = XD*B2;
+
+fExact = B1*F1 + B2*F2;
+fDelta = b1*F1 + b2*F2;
+
+gExact = B1*G1 + B2*G2;
+gDelta = b1*G1 + b2*G2;
+
+(* Compute auxiliary VExact *)
+MM = fDelta[[1]];
+NN = fDelta[[-1]];
+
+VExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);
+G3 = Table[NIntegrate[1/(y[[i]] - x)*VExact, {x, X1, X2}], {i, m}];
+
+UExact = fExact - VExact;
+GExact = gExact - G3;
+GDelta = gDelta - G3;
+
+(* Setup matrix A and right hand side *)
+A = ConstantArray[0, {n, n}];
+Aphi = ConstantArray[0, {m, n}];
+
+Do[
+  Aphi[[All, j]] =
+   1/hx*((y - x[[j - 1]])*
+        Log[y - x[[j - 1]]] + (x[[j - 1]] - x[[j]]) +
+       (y - x[[j + 1]])*Log[y - x[[j + 1]]] -
+       2*(y - x[[j]])*Log[y - x[[j]]] - (x[[j]] - x[[j + 1]] )),
+  {j, 2, n - 1}];
+
+(* Special cases for boundary *)
+Aphi[[All, 1]] =
+  Log[y - x[[1]]] +
+   1/hx*((y - x[[2]])*Log[y - x[[2]]] - (y - x[[1]])*Log[y - x[[1]]] -
+     (x[[1]] - x[[2]]));
+
+Aphi[[All, n]] = -Log[y - x[[n]]] +
+  1/hx*(-(y - x[[n]])*Log[y - x[[n]]] + (y - x[[n - 1]])*
+        Log[y - x[[n - 1]]] + (x[[n - 1]] - x[[n]]));
+
+(* Assemble matrix A *)
+Do[
+  Do[
+    A[[i, j]] =
+     NIntegrate[
+      Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}], {j, n}], {i, n}];
+
+(* Compute right hand side *)
+Do[
+  ba[[i]] =
+   NIntegrate[Aphi[[All, i]]*GDelta, {y, Y1, Y2}], {i, n}];
+
+(* Setup regularization matrices *)
+M = ConstantArray[0, {n, n}];
+
+M[[1, 1]] = 4;
+M[[1, 2]] = 2;
+
+Do[
+  M[[i, i]] = 8;
+  M[[i, i - 1]] = 2;
+  M[[i, i + 1]] = 2, {i, 2, n - 1}];
+
+M[[n, n]] = 4;
+M[[n, n - 1]] = 2;
+
+M = hx/12*M;
+
+M1 = ConstantArray[0, {n, n}];
+
+M1[[1, 1]] = 1;
+M1[[1, 2]] = -1;
+
+Do[
+  M1[[i, i]] = 2;
+  M1[[i, i - 1]] = -1;
+  M1[[i, i + 1]] = -1, {i, 2, n - 1}];
+
+M1[[n, n]] = 1;
+M1[[n, n - 1]] = -1;
+
+M1 = (1/hx)*M1;
+
+H1 = M + M1;
+
+(* Reduce system for inner points *)
+A = Drop[A, {1, -1}];
+ba = Drop[ba, {1, -1}];
+H1 = Drop[H1, {1, -1}];
+
+(* Tikhonov regularization *)
+ite = 20;
+alpha = Table[10^(-k), {k, ite}];
+
+Do[
+  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];
+  Ua[[All, k]] = Flatten[{0, ua[[All, k]], 0}];
+  fa[[All, k]] = Ua[[All, k]] + VExact;
+
+  (* Compute residuals *)
+  res[k] = Sqrt[NIntegrate[(Aphi.fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];
+  err[k] = Sqrt[NIntegrate[(fa[[All, k]] - fExact)^2, {x, X1, X2}]];
+
+  (* Compute criteria for choosing alpha *)
+  L[k] = Sqrt[NIntegrate[fa[[All, k]]^2, {x, X1, X2}]]*res[k];
+  LH[k] = Sqrt[NIntegrate[fa[[All, k]]^2 + (D[fa[[All, k]], x])^2, {x, X1, X2}]]*res[k],
+
+  {k, ite}];
+
+(* Plot L-curves *)
+ListPlot[{Table[{Log[alpha[[k]]], Log[L[k]]}, {k, ite}],
+          Table[{Log[alpha[[k]]], Log[LH[k]]}, {k, ite}]},
+         PlotStyle -> {Red, Blue},
+         AxesLabel -> {"Log(α)", "Log(L)"},
+         PlotLegends -> {"L2", "H1"}]
+
+(* Plot regularized solution *)
+Plot[{fExact, fa[[All, kl]]}, {x, X1, X2},
+     PlotStyle -> {Blue, Red},
+     PlotLegends -> {"Exact", "Regularized"}]
+
+(* Print optimal alpha indices *)
+Print["Optimal α index for L2 curve: ", kl]
+Print["Optimal α index for H1 curve: ", klh]
+
+(* Alternative GCV criterion *)
+I1 = IdentityMatrix[Length[y]];
+I2 = IdentityMatrix[Length[x]];
+
+Do[
+  VV = I1 - Aphi.LinearSolve[Aphi.Transpose[Aphi] + alpha[[i]]*I2, Transpose[Aphi]];
+  V1 = Norm[VV.gDelta]^2;
+  V2 = Tr[VV]^2;
+  V[[i]] = V1/V2,
+  {i, 20}];
+
+{Vm, Vi} = Min[V];
+
+(* Optimal alpha with discrepancy principle *)
+Do[
+  Rho[[i]] = Norm[alpha[[i]]*(Aphi.Transpose[Aphi] + alpha[[i]]*I2).fa[[All, i]]],
+  {i, 20}];
+
+{Rm, Ri} = Min[Rho];
+
+(* Print summary table *)
+{{"L-curve+L^2", "L-curve+H^1", "GCV", "拟最优"}, {kl, klh, Vi, Ri}}

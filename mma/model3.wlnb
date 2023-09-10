@@ -2,300 +2,123 @@
  "cells": [
   {
    "kind": 2,
-   "value": "(* Initialize parameters *)\nX1 = 0;\nX2 = 2;\nY1 = X2 + 0.01;\nY2 = 30 + 0.01;",
+   "value": "(* Initialize parameters *)\n\nX1 = 0;\nX2 = 2;\nY1 = X2 + 0.01;\nY2 = 30 + 0.01;",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731269303,
-     "endTime": 1693731269548
-    },
-    "executionOrder": 161,
-    "success": true
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Generate x, y meshgrid *)\nn = (X2 - X1)*1000 + 1;\nm = (Y2 - Y1)*100 + 1;\n\nhx = (X2 - X1)/(n - 1);\nhy = (Y2 - Y1)/(m - 1);\n\nx = Range[X1, X2, hx];\ny = Range[Y1, Y2, hy];",
+   "value": "(* Generate x, y meshgrid *)\nn = Round[(X2 - X1)*1000 + 1];\nm = Round[(Y2 - Y1)*100 + 1 ];\nhx = (X2 - X1)/(n - 1);\nhy = (Y2 - Y1)/(m - 1);\n\nx = Range[X1, X2, hx];\ny = Range[Y1, Y2, hy];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731626881,
-     "endTime": 1693731627247
-    },
-    "executionOrder": 197,
-    "success": true
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
    "value": "(* Define test functions *)\nfV1 = 0.22; m1 = 0.78; gamma1 = 0.15;\nfV2 = 0.19; m2 = 1.46; gamma2 = 0.4;\nfV3 = 0.14; m3 = 1.72; gamma3 = 0.25;\nfV4 = 0.14; m4 = 1.90; gamma4 = 0.1;",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
-   "metadata": {
-    "custom": {
-     "metadata": {
-      "notebookRunGroups": {
-       "groupValue": ""
-      }
-     }
-    }
-   },
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731628794,
-     "endTime": 1693731629038
-    },
-    "executionOrder": 203,
-    "success": true
-   }
+   "metadata": {},
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* f is the main function, f1-f4 are components *)\nf[x_, M_, G_, F_] := F^2*((M^4 + M^2*G^2)/(24*π*((x - M^2)^2 + M^2*G^2)));\n\nf1 = f[x, m1, gamma1, 1];\nf2 = f[x, m2, gamma2, 1];\nf3 = f[x, m3, gamma3, 1];\nf4 = f[x, m4, gamma4, 1];\n\nF = f1 + f2 + f3 + f4;",
+   "value": "(* f is the main function, f1-f4 are components *)\nf[x_, M_, G_, F_] := F^2*((M^4 + M^2*G^2)/(24*π*((x - M^2)^2 + M^2*G^2)));\nf1 = f[x, m1, gamma1, 1];\nf2 = f[x, m2, gamma2, 1];\nf3 = f[x, m3, gamma3, 1];\nf4 = f[x, m4, gamma4, 1];\n\nF = f1 + f2 + f3 + f4;",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731656882,
-     "endTime": 1693731657248
-    },
-    "executionOrder": 234,
-    "success": true
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = Table[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}], {i, m}];\nF2 = f2[x];\nG2 = Table[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}], {i, m}];",
+   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];\n\nF2 = f2[x];\nG2 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731270526,
-     "endTime": 1693731273331
-    },
-    "executionOrder": 181,
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Define true solution with some noise *)\nB1 = 1; B2 = 2;\nXD = 1.01;\nb1 = XD*B1; b2 = XD*B2;\nfExact = B1*F1 + B2*F2;\nfDelta = b1*F1 + b2*F2;\ngExact = B1*G1 + B2*G2;\ngDelta = b1*G1 + b2*G2;",
+   "value": "(* Define true solution with some noise *)\nB1 = 1; B2 = 2;\nXD = 1.01;\nb1 = XD*B1; b2 = XD*B2;\n\nfExact = B1*F1 + B2*F2;\nfDelta = b1*F1 + b2*F2;\n\ngExact = B1*G1 + B2*G2;\ngDelta = b1*G1 + b2*G2;",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273332,
-     "endTime": 1693731273332
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Compute auxiliary VExact *)\nMM = fDelta[[1]];\nNN = fDelta[[-1]];\nVExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);\nG3 = Table[NIntegrate[1/(y[[i]] - x)*VExact, {x, X1, X2}], {i, m}];\nUExact = fExact - VExact;\nGExact = gExact - G3;\nGDelta = gDelta - G3;\n",
+   "value": "(* Compute auxiliary VExact *)\nMM = fDelta[[1]];\nNN = fDelta[[-1]];\n\nVExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);\nG3 = Table[NIntegrate[1/(y[[i]] - x)*VExact, {x, X1, X2}], {i, m}];\n\nUExact = fExact - VExact;\nGExact = gExact - G3;\nGDelta = gDelta - G3;",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273332,
-     "endTime": 1693731273332
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Setup matrix A and right hand side *)\nA = ConstantArray[0, {n, n}];\nAphi = ConstantArray[0, {m, n}];\nDo[\n  Aphi[[All, j]] =\n   1/hx*((y - x[[j - 1]])*\n        Log[y - x[[j - 1]]] + (x[[j - 1]] - x[[j]]) +\n       (y - x[[j + 1]])*Log[y - x[[j + 1]]] -\n       2*(y - x[[j]])*Log[y - x[[j]]] - (x[[j]] - x[[j + 1]] )),\n  {j, 2, n - 1}];\n",
+   "value": "(* Setup matrix A and right hand side *)\nA = ConstantArray[0, {n, n}];\nAphi = ConstantArray[0, {m, n}];\n\nDo[\n    Aphi[[All, j]] =1/hx*((y - x[[j - 1]])*Log[y - x[[j - 1]]] + (x[[j - 1]] - x[[j]]) +(y - x[[j + 1]])*Log[y - x[[j + 1]]] -2*(y - x[[j]])*Log[y - x[[j]]] - (x[[j]] - x[[j + 1]] )),{j, 2, n - 1}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273332,
-     "endTime": 1693731273332
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Special cases for boundary *)\nAphi[[All, 1]] =\n  Log[y - x[[1]]] +\n   1/hx*((y - x[[2]])*Log[y - x[[2]]] - (y - x[[1]])*Log[y - x[[1]]] -\n     (x[[1]] - x[[2]]));\nAphi[[All, n]] = -Log[y - x[[n]]] +\n  1/hx*(-(y - x[[n]])*Log[y - x[[n]]] + (y - x[[n - 1]])*\n        Log[y - x[[n - 1]]] + (x[[n - 1]] - x[[n]]));\n",
+   "value": "(* Special cases for boundary *)\nAphi[[All, 1]] =Log[y - x[[1]]] +1/hx*((y - x[[2]])*Log[y - x[[2]]] - (y - x[[1]])*Log[y - x[[1]]] -(x[[1]] - x[[2]]));\nAphi[[All, n]] = -Log[y - x[[n]]] +1/hx*(-(y - x[[n]])*Log[y - x[[n]]] + (y - x[[n - 1]])*Log[y - x[[n - 1]]] + (x[[n - 1]] - x[[n]]));",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273332,
-     "endTime": 1693731273332
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Assemble matrix A *)\nDo[\n  Do[\n    A[[i, j]] =\n     NIntegrate[\n      Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}], {j, n}], {i, n}];\n",
+   "value": "(* Assemble matrix A *)\nDo[\n  Do[\n    A[[i, j]] = NIntegrate[Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}], {j, n}], {i, n}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273332,
-     "endTime": 1693731273333
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Compute right hand side *)\nDo[\n  ba[[i]] =\n   NIntegrate[Aphi[[All, i]]*GDelta, {y, Y1, Y2}], {i, n}];\n",
+   "value": "(* Compute right hand side *)\nDo[\n  ba[[i]] =\n   NIntegrate[Aphi[[All, i]]*GDelta, {y, Y1, Y2}], {i, n}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273333,
-     "endTime": 1693731273333
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Setup regularization matrices *)\nM = ConstantArray[0, {n, n}];\nM[[1, 1]] = 4;\nM[[1, 2]] = 2;\nDo[\n  M[[i, i]] = 8;\n  M[[i, i - 1]] = 2;\n  M[[i, i + 1]] = 2, {i, 2, n - 1}];\nM[[n, n]] = 4;\nM[[n, n - 1]] = 2;\nM = hx/12*M;\nM1 = ConstantArray[0, {n, n}];\nM1[[1, 1]] = 1;\nM1[[1, 2]] = -1;\nDo[\n  M1[[i, i]] = 2;\n  M1[[i, i - 1]] = -1;\n  M1[[i, i + 1]] = -1, {i, 2, n - 1}];\nM1[[n, n]] = 1;\nM1[[n, n - 1]] = -1;\nM1 = (1/hx)*M1;\nH1 = M + M1;\n",
+   "value": "(* Setup regularization matrices *)\nM = ConstantArray[0, {n, n}];\n\nM[[1, 1]] = 4;\nM[[1, 2]] = 2;\n\nDo[\n  M[[i, i]] = 8;\n  M[[i, i - 1]] = 2;\n  M[[i, i + 1]] = 2, {i, 2, n - 1}];\n\nM[[n, n]] = 4;\nM[[n, n - 1]] = 2;\n\nM = hx/12*M;\n\nM1 = ConstantArray[0, {n, n}];\n\nM1[[1, 1]] = 1;\nM1[[1, 2]] = -1;\n\nDo[\n  M1[[i, i]] = 2;\n  M1[[i, i - 1]] = -1;\n  M1[[i, i + 1]] = -1, {i, 2, n - 1}];\n\nM1[[n, n]] = 1;\nM1[[n, n - 1]] = -1;\n\nM1 = (1/hx)*M1;\n\nH1 = M + M1;",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273333,
-     "endTime": 1693731273333
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Reduce system for inner points *)\nA = Drop[A, {1, -1}];\nba = Drop[ba, {1, -1}];\nH1 = Drop[H1, {1, -1}];\n",
+   "value": "(* Reduce system for inner points *)\nA = Drop[A, {1, -1}];\nba = Drop[ba, {1, -1}];\nH1 = Drop[H1, {1, -1}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273333,
-     "endTime": 1693731273333
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Tikhonov regularization *)\nite = 20;\nalpha = Table[10^(-k), {k, ite}];\nDo[\n  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];\n  Ua[[All, k]] = Flatten[{0, ua[[All, k]], 0}];\n  fa[[All, k]] = Ua[[All, k]] + VExact;\n  (* Compute residuals *)\n  res[k] = Sqrt[NIntegrate[(Aphi.fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];\n  err[k] = Sqrt[NIntegrate[(fa[[All, k]] - fExact)^2, {x, X1, X2}]];\n  (* Compute criteria for choosing alpha *)\n  L[k] = Sqrt[NIntegrate[fa[[All, k]]^2, {x, X1, X2}]]*res[k];\n  LH[k] = Sqrt[NIntegrate[fa[[All, k]]^2 + (D[fa[[All, k]], x])^2, {x, X1, X2}]]*res[k],\n  {k, ite}];",
+   "value": "(* Tikhonov regularization *)\nite = 20;\nalpha = Table[10^(-k), {k, ite}];\n\nDo[\n  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];\n  Ua[[All, k]] = Flatten[{0, ua[[All, k]], 0}];\n  fa[[All, k]] = Ua[[All, k]] + VExact;\n\n  (* Compute residuals *)\n  res[k] = Sqrt[NIntegrate[(Aphi.fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];\n  err[k] = Sqrt[NIntegrate[(fa[[All, k]] - fExact)^2, {x, X1, X2}]];\n\n  (* Compute criteria for choosing alpha *)\n  L[k] = Sqrt[NIntegrate[fa[[All, k]]^2, {x, X1, X2}]]*res[k];\n  LH[k] = Sqrt[NIntegrate[fa[[All, k]]^2 + (D[fa[[All, k]], x])^2, {x, X1, X2}]]*res[k],{k, ite}];",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273333,
-     "endTime": 1693731273333
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "(* Plot L-curves *)\nListPlot[{Table[{Log[alpha[[k]]], Log[L[k]]}, {k, ite}],\n          Table[{Log[alpha[[k]]], Log[LH[k]]}, {k, ite}]},\n         PlotStyle -> {Red, Blue},\n         AxesLabel -> {\"Log(α)\", \"Log(L)\"},\n         PlotLegends -> {\"L2\", \"H1\"}]",
+   "value": "(* Plot L-curves *)\nListPlot[{Table[{Log[alpha[[k]]], Log[L[k]]}, {k, ite}],\n          Table[{Log[alpha[[k]]], Log[LH[k]]}, {k, ite}]},\n         PlotStyle -> {Red, Blue},\n         AxesLabel -> {\"Log(α)\", \"Log(L)\"},\n         PlotLegends -> {\"L2\", \"H1\"}]\n\n(* Plot regularized solution *)\nPlot[{fExact, fa[[All, kl]]}, {x, X1, X2},\n     PlotStyle -> {Blue, Red},\n     PlotLegends -> {\"Exact\", \"Regularized\"}]\n\n(* Print optimal alpha indices *)\nPrint[\"Optimal α index for L2 curve: \", kl]\nPrint[\"Optimal α index for H1 curve: \", klh]\n\n(* Alternative GCV criterion *)\nI1 = IdentityMatrix[Length[y]];\nI2 = IdentityMatrix[Length[x]];\n\nDo[\n  VV = I1 - Aphi.LinearSolve[Aphi.Transpose[Aphi] + alpha[[i]]*I2, Transpose[Aphi]];\n  V1 = Norm[VV.gDelta]^2;\n  V2 = Tr[VV]^2;\n  V[[i]] = V1/V2,\n  {i, 20}];\n\n{Vm, Vi} = Min[V];\n\n(* Optimal alpha with discrepancy principle *)\nDo[\n  Rho[[i]] = Norm[alpha[[i]]*(Aphi.Transpose[Aphi] + alpha[[i]]*I2).fa[[All, i]]],\n  {i, 20}];\n\n{Rm, Ri} = Min[Rho];\n\n(* Print summary table *)\n{{\"L-curve+L^2\", \"L-curve+H^1\", \"GCV\", \"拟最优\"}, {kl, klh, Vi, Ri}}\n",
    "languageId": "wolfram",
-   "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273334,
-     "endTime": 1693731273334
-    },
-    "success": false
-   }
-  },
-  {
-   "kind": 2,
-   "value": "(* Plot regularized solution *)\nPlot[{fExact, fa[[All, kl]]}, {x, X1, X2},\n     PlotStyle -> {Blue, Red},\n     PlotLegends -> {\"Exact\", \"Regularized\"}]\n",
-   "languageId": "wolfram",
-   "mime": "text/plain",
-   "outputs": [],
-   "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273334,
-     "endTime": 1693731273334
-    },
-    "success": false
-   }
-  },
-  {
-   "kind": 2,
-   "value": "(* Print optimal alpha indices *)\nPrint[\"Optimal α index for L2 curve: \", kl]\nPrint[\"Optimal α index for H1 curve: \", klh]\n",
-   "languageId": "wolfram",
-   "mime": "text/plain",
-   "outputs": [],
-   "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273334,
-     "endTime": 1693731273334
-    },
-    "success": false
-   }
-  },
-  {
-   "kind": 2,
-   "value": "(* Optimal alpha with discrepancy principle *)\nDo[\n  Rho[[i]] = Norm[alpha[[i]]*(Aphi.Transpose[Aphi] + alpha[[i]]*I2).fa[[All, i]]],\n  {i, 20}];\n{Rm, Ri} = Min[Rho];\n",
-   "languageId": "wolfram",
-   "mime": "text/plain",
-   "outputs": [],
-   "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273334,
-     "endTime": 1693731273334
-    },
-    "success": false
-   }
-  },
-  {
-   "kind": 2,
-   "value": "(* Print summary table *)\n{{\"L-curve+L^2\", \"L-curve+H^1\", \"GCV\", \"拟最优\"}, {kl, klh, Vi, Ri}}\n",
-   "languageId": "wolfram",
-   "mime": "text/plain",
-   "outputs": [],
-   "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693731273334,
-     "endTime": 1693731273334
-    },
-    "success": false
-   }
+   "executionSummary": {}
   }
  ]
 }

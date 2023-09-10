@@ -46,32 +46,11 @@
   },
   {
    "kind": 2,
-   "value": "G1 = ParallelTable[NIntegrate[1/(yGrid[[i]]-xGrid).F1, {x, xStart, xEnd}, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, 1, yResolution}];\nG2 = ParallelTable[NIntegrate[1/(yGrid[[i]]-xGrid).F2, {x, xStart, xEnd}, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, 1, yResolution}];",
+   "value": "G1 = ParallelTable[NIntegrate[1/(yGrid[[i]]-xGrid).F1, {x, xStart, xEnd}, Method -> \"Trapezoidal\",  MaxPoints -> xResolution, ParallelizationMethod -> \"ThreadPool\", \"MaxThreads\" -> 16, PrecisionGoal -> 10, {x, xStart, xEnd}],{i, 1, yResolution}];\nG2 = ParallelTable[NIntegrate[1/(yGrid[[i]]-xGrid).F2, {x, xStart, xEnd}, Method -> \"Trapezoidal\",  MaxPoints -> xResolution, ParallelizationMethod -> \"ThreadPool\", \"MaxThreads\" -> 16, PrecisionGoal -> 10, {x, xStart, xEnd}],{i, 1, yResolution}];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894128659,
-     "endTime": 1693894167419
-    },
-    "executionOrder": 286,
-    "success": false
-   }
-  },
-  {
-   "kind": 2,
-   "value": "G1[[1]]",
-   "languageId": "wolfram",
-   "outputs": [],
-   "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -79,13 +58,7 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -93,13 +66,7 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -108,13 +75,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -123,13 +84,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -138,13 +93,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -153,13 +102,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -167,13 +110,7 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167420
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -181,13 +118,7 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167420,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -196,13 +127,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -211,13 +136,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -226,13 +145,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -240,13 +153,7 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -254,28 +161,16 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
-   "value": "For[k = 1, k <= numIterations, k++,\n  ua = LinearSolve[, ba];\n  (* Ua = Join[{0}, ua, {0}];\n  fa = Ua + VExact; *)\n  Print[ua]\n  Break\n  (* Calculate error and metrics *)\n  (* Total[1/Transpose[Outer[Subtract, yGrid, xGrid]]*F1]*hx; *)\n  (* res = Sqrt[Total[(Aphi.fa - gDelta)^2]];\n  err = Sqrt[Total[(fa - fExact)^2]]; *)\n\n  (* Calculate L-curve and LH-curve values\n  LcurveValues[[k]] = Sqrt[NIntegrate[fa^2, {x, xStart, xEnd}]]*res;\n  LHcurveValues[[k]] = Sqrt[NIntegrate[(fa^2 + (D[fa, x])^2), {x, xStart, xEnd}]]*res;\n\n  (* Use GCV method to select best alpha *)\n  VV = IdentityMatrix[yResolution] - Aphi.LinearSolve[Aphi.Transpose[Aphi] + alphaValues[[k]]*IdentityMatrix[xResolution], Transpose[Aphi]];\n  V1 = Norm[VV.(gDelta + G2Delta)]^2;\n  V2 = Tr[VV]^2;\n  GCVvalues[[k]] = V1/V2;\n\n  (* Calculate Rho *)\n  RhoValues[[k]] = Norm[alphaValues[[k]]*LinearSolve[Aphi.Transpose[Aphi] + alphaValues[[k]]*IdentityMatrix[xResolution], fa]]; *)\n]",
+   "value": "For[k = 1, k <= numIterations, k++,\n  ua = LinearSolve[, ba];1.029424016273072e-04}];\n  fa = Ua + VExact; *)\n  Print[ua]\n  Break\n  (* Calculate error and metrics *)\n  (* Total[1/Transpose[Outer[Subtract, yGrid, xGrid]]*F1]*hx; *)\n  (* res = Sqrt[Total[(Aphi.fa - gDelta)^2]];\n  err = Sqrt[Total[(fa - fExact)^2]]; *)\n\n  (* Calculate L-curve and LH-curve values\n  LcurveValues[[k]] = Sqrt[NIntegrate[fa^2, {x, xStart, xEnd}]]*res;\n  LHcurveValues[[k]] = Sqrt[NIntegrate[(fa^2 + (D[fa, x])^2), {x, xStart, xEnd}]]*res;\n\n  (* Use GCV method to select best alpha *)\n  VV = IdentityMatrix[yResolution] - Aphi.LinearSolve[Aphi.Transpose[Aphi] + alphaValues[[k]]*IdentityMatrix[xResolution], Transpose[Aphi]];\n  V1 = Norm[VV.(gDelta + G2Delta)]^2;\n  V2 = Tr[VV]^2;\n  GCVvalues[[k]] = V1/V2;\n\n  (* Calculate Rho *)\n  RhoValues[[k]] = Norm[alphaValues[[k]]*LinearSolve[Aphi.Transpose[Aphi] + alphaValues[[k]]*IdentityMatrix[xResolution], fa]]; *)\n]",
    "languageId": "wolfram",
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167421,
-     "endTime": 1693894167421
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -284,13 +179,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167422,
-     "endTime": 1693894167422
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -299,13 +188,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167422,
-     "endTime": 1693894167422
-    },
-    "success": false
-   }
+   "executionSummary": {}
   },
   {
    "kind": 2,
@@ -314,13 +197,7 @@
    "mime": "text/plain",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {
-    "timing": {
-     "startTime": 1693894167422,
-     "endTime": 1693894167422
-    },
-    "success": false
-   }
+   "executionSummary": {}
   }
  ]
 }
