@@ -6,7 +6,14 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950659305,
+     "endTime": 1694950659582
+    },
+    "executionOrder": 1,
+    "success": true
+   }
   },
   {
    "kind": 2,
@@ -14,7 +21,14 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950659582,
+     "endTime": 1694950659941
+    },
+    "executionOrder": 5,
+    "success": true
+   }
   },
   {
    "kind": 2,
@@ -22,7 +36,14 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950659941,
+     "endTime": 1694950660182
+    },
+    "executionOrder": 11,
+    "success": true
+   }
   },
   {
    "kind": 2,
@@ -30,15 +51,29 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950660182,
+     "endTime": 1694950660545
+    },
+    "executionOrder": 15,
+    "success": true
+   }
   },
   {
    "kind": 2,
-   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];\n\nF2 = f2[x];\nG2 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];",
+   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}, PrecisionGoal -> 5, Method -> \"Trapezoidal\"], {i, m}];\n\nF2 = f2[x];\nG2 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}, PrecisionGoal -> 5, Method -> \"Trapezoidal\"], {i, m}];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950660546,
+     "endTime": 1694950702046
+    },
+    "executionOrder": 21,
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -46,7 +81,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702046,
+     "endTime": 1694950702047
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -54,7 +95,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702047,
+     "endTime": 1694950702047
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -62,7 +109,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702047,
+     "endTime": 1694950702047
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -70,7 +123,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702047,
+     "endTime": 1694950702047
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -78,7 +137,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702047,
+     "endTime": 1694950702047
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -86,7 +151,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702048,
+     "endTime": 1694950702048
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -94,7 +165,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702048,
+     "endTime": 1694950702048
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -102,7 +179,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702048,
+     "endTime": 1694950702048
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -110,7 +193,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702048,
+     "endTime": 1694950702048
+    },
+    "success": false
+   }
   },
   {
    "kind": 2,
@@ -118,7 +207,13 @@
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
-   "executionSummary": {}
+   "executionSummary": {
+    "timing": {
+     "startTime": 1694950702049,
+     "endTime": 1694950702049
+    },
+    "success": false
+   }
   }
  ]
 }
