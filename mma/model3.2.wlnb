@@ -18,7 +18,7 @@
   },
   {
    "kind": 2,
-   "value": "(* Define test functions *)\nfV1 = 0.22; m1 = 0.78; gamma1 = 0.15;\nfV2 = 0.19; m2 = 1.46; gamma2 = 0.4;\nfV3 = 0.14; m3 = 1.72; gamma3 = 0.25;\nfV4 = 0.14; m4 = 1.90; gamma4 = 0.1;",
+   "value": "(* Define test functions *)\nfV1 = 0.22; m1 = 0.78; gamma1 = 0.15;\nfV2 = 0.19; m2 = 1.46; gamma2 = 0.4;\nfV3 = 0.14; m3 = 1.72; gamma3 = 0.25;\nfV4 = 0.14; m4 = 1.90; gamma4 = 0.1;\n\ntrapz[y_List, x_List] := Module[{n, h},\nn = Length[x];\nh = (x[[-1]] - x[[1]])/(n - 1);\nh*(Total[y] - (y[[1]] + y[[-1]])/2)\n]",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
@@ -34,9 +34,44 @@
   },
   {
    "kind": 2,
-   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F1, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];\n\nF2 = f2[x];\nG2 = ParallelTable[NIntegrate[1/(y[[i]] - x)*F2, {x, X1, X2}, PrecisionGoal -> 10, Method -> \"Trapezoidal\",  MaxPoints -> xResolution], {i, m}];\n(* try to replace trapz better *)",
+   "value": "(* Compute F1, F2 components and integral operators G1, G2 *)\nF1 = f1;\nG1 = ParallelTable[trapz[(1/(y[[i]] - x))*F1, x], {i, m}];\n\n\nF2 = x-x;\nG2 = ParallelTable[trapz[(1/(y[[i]] - x))*F2, x], {i, m}];",
    "languageId": "wolfram",
-   "outputs": [],
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<pre><span class=\"wl-message\">ParallelTable::nopar</span>: \n   No parallel kernels available; proceeding with sequential evaluation.</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "ParallelTable::nopar: \n   No parallel kernels available; proceeding with sequential evaluation.",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "f94948f5-a7ff-465c-8702-66b04e7b3712",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<pre><span class=\"wl-message\">ParallelTable::nopar</span>: \n   No parallel kernels available; proceeding with sequential evaluation.</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "ParallelTable::nopar: \n   No parallel kernels available; proceeding with sequential evaluation.",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "49e3c32d-e9b3-4000-a571-df8cb2356624",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    }
+   ],
    "metadata": {},
    "executionSummary": {}
   },
@@ -50,7 +85,7 @@
   },
   {
    "kind": 2,
-   "value": "(* Compute auxiliary VExact *)\nMM = fDelta[[1]];\nNN = fDelta[[-1]];\n\nVExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);\nG3 = Table[NIntegrate[1/(y[[i]] - x)*VExact, {x, X1, X2}], {i, m}];\n\nUExact = fExact - VExact;\nGExact = gExact - G3;\nGDelta = gDelta - G3;",
+   "value": "(* Compute auxiliary VExact *)\nMM = fDelta[[1]];\nNN = fDelta[[-1]];\n\nVExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);\nG3 = Table[trapz[1/(y[[i]] - x)*VExact, x], {i, m}];\n\nUExact = fExact - VExact;\nGExact = gExact - G3;\nGDelta = gDelta - G3;",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
@@ -74,7 +109,7 @@
   },
   {
    "kind": 2,
-   "value": "(* Assemble matrix A *)\nDo[\n  Do[\n    A[[i, j]] = NIntegrate[Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}], {j, n}], {i, n}];",
+   "value": "(* Assemble matrix A *)\nDo[\n  Do[\n    A[[i, j]] = trapz[Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}], {j, n}], {i, n}];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
@@ -82,7 +117,7 @@
   },
   {
    "kind": 2,
-   "value": "(* Compute right hand side *)\nDo[\n  ba[[i]] =\n   NIntegrate[Aphi[[All, i]]*GDelta, {y, Y1, Y2}], {i, n}];",
+   "value": "(* Compute right hand side *)\nDo[\n  ba[[i]] =\n   trapz[Aphi[[All, i]]*GDelta, {y, Y1, Y2}], {i, n}];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
@@ -106,7 +141,7 @@
   },
   {
    "kind": 2,
-   "value": "(* Tikhonov regularization *)\nite = 20;\nalpha = Table[10^(-k), {k, ite}];\n\nDo[\n  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];\n  Ua[[All, k]] = Flatten[{0, ua[[All, k]], 0}];\n  fa[[All, k]] = Ua[[All, k]] + VExact;\n\n  (* Compute residuals *)\n  res[k] = Sqrt[NIntegrate[(Aphi.fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];\n  err[k] = Sqrt[NIntegrate[(fa[[All, k]] - fExact)^2, {x, X1, X2}]];\n\n  (* Compute criteria for choosing alpha *)\n  L[k] = Sqrt[NIntegrate[fa[[All, k]]^2, {x, X1, X2}]]*res[k];\n  LH[k] = Sqrt[NIntegrate[fa[[All, k]]^2 + (D[fa[[All, k]], x])^2, {x, X1, X2}]]*res[k],{k, ite}];",
+   "value": "(* Tikhonov regularization *)\nite = 20;\nalpha = Table[10^(-k), {k, ite}];\n\nDo[\n  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];\n  Ua[[All, k]] = Flatten[{0, ua[[All, k]], 0}];\n  fa[[All, k]] = Ua[[All, k]] + VExact;\n\n  (* Compute residuals *)\n  res[k] = Sqrt[trapz[(Aphi.fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];\n  err[k] = Sqrt[trapz[(fa[[All, k]] - fExact)^2, x]];\n\n  (* Compute criteria for choosing alpha *)\n  L[k] = Sqrt[trapz[fa[[All, k]]^2, x]]*res[k];\n  LH[k] = Sqrt[trapz[fa[[All, k]]^2 + (D[fa[[All, k]], x])^2, x]]*res[k],{k, ite}];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},

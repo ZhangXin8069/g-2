@@ -1,0 +1,146 @@
+{
+ "cells": [
+  {
+   "kind": 2,
+   "value": "(* Definetheparameters*)\nX1=0;\nX2=2;\nY1= X2 + 0.01;\nY2 = 30 + 0.01;\nn = (X2 - X1)*1000 + 1;\nm = (Y2 - Y1)*100 + 1;\nhx = (X2 - X1)/(n - 1);\nhy = (Y2 - Y1)/(m - 1);\nx =Table[X1 + i*hx, {i, 0, n - 1}];\ny =Table[Y1 + i*hy, {i, 0, m - 1}];",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Define test functions *)\nfV1 = 0.22; m1 = 0.78; gamma1 = 0.15;\nfV2 = 0.19; m2 = 1.46; gamma2 = 0.4;\nfV3 = 0.14; m3 = 1.72; gamma3 = 0.25;\nfV4 = 0.14; m4 = 1.90; gamma4 = 0.1;",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Define the functions *)\nf[x_, M_, G_, F_] := F^2*((M^4 + M^2*G^2)/(24*Pi*((x - M^2)^2 + M^2*G^2)))\nf1 = f[x, m1, gamma1, 1];\nf2 = f[x, m2, gamma2, 1];\nf3 = f[x, m3, gamma3, 1];\nf4 = f[x, m4, gamma4, 1];\nF = f1 + f2 + f3 + f4;\ntrapz[y_List, x_List] := \nModule[{h = (Last[x] - First[x])/(Length[x] - 1)}, \nh*(Total[y] - (First[y] + Last[y])/2)]",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Calculate G1 and G2 *)\nF1 = f1;\nG1 =Table[trapz[1/(y[[i]] - x)*F1, x], {i, 1, m}];\nF2 = x - x;\nG2 =Table[trapz[1/(y[[i]] - x)*F2, x], {i, 1, m}];\nB1 = 1;\nB2 = 2;\nXD = 1.01;\nb1 = XD*B1;\nb2 = XD*B2;\nfExact = B1*F1 + B2*F2;\nfDelta = b1*F1 + b2*F2;",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Calculate G3 *)\nMM = fDelta[[1]];\nNN = fDelta[[-1]];\nVExact = (MM*(x - X2))/(X1 - X2) + (NN*(x - X1))/(X2 - X1);\nG3 =Table[trapz[1/(y[[i]] - x)*VExact, x], {i, 1, m}];\nUExact = fExact - VExact;",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Calculate A and ba *)\nA =Table[0, {n - 2}, {n - 2}];\nAphi =Table[0, {m}, {n - 2}];\nba =Table[0, {n - 2}];\nFor[i = 2, i <= n - 1, i++,\n  Aphi[[All, i - 1]] = \n    1/hx*((y - x[[i - 1]])*Log[y - x[[i - 1]]] + (x[[i - 1]] - x[[i]]) + (y - x[[i + 1]])*Log[y - x[[i + 1]]] - \n       2*(y - x[[i]])*Log[y - x[[i]]] - (x[[i]] - x[[i + 1]]));\n]\nAphi[[All, 1]] = Log[y - x[[1]]] + \n   1/hx*((y - x[[2]])*Log[y - x[[2]]] - (y - x[[1]])*Log[y - x[[1]]] - (x[[1]] - x[[2]]));\nAphi[[All, n - 2]] = -Log[y - x[[-1]]] + \n   1/hx*(-(y - x[[-1]])*Log[y - x[[-1]]] + (y - x[[-2]])*Log[y - x[[-2]]] + (x[[-2]] - x[[-1]]));\nFor[i = 1, i <= n - 2, i++,\n  For[j = 1, j <= n - 2, j++,\n    A[[i, j]] = trapz[Aphi[[All, i]]*Aphi[[All, j]], {y, Y1, Y2}];\n  ];\n  ba[[i]] = trapz[Aphi[[All, i]]*GDelta, {y, Y1, Y2}];\n];",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Create M matrix *)\nM =Table[0, {n}, {n}];\nM[[1, 1]] = 4;\nM[[1, 2]] = 2;\nFor[i = 2, i <= n - 1, i++,\n  M[[i, i]] = 8;\n  M[[i, i - 1]] = 2;\n  M[[i, i + 1]] = 2;\n];\nM[[-1, -1]] = 4;\nM[[-1, -2]] = 2;\nM = hx/12*M;\n",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Create M1 matrix *)\nM1 =Table[0, {n}, {n}];\nM1[[1, 1]] = 1;\nM1[[1, 2]] = -1;\nFor[i = 2, i <= n - 1, i++,\n  M1[[i, i]] = 2;\n  M1[[i, i - 1]] = -1;\n  M1[[i, i + 1]] = -1;\n];\nM1[[-1, -1]] = 1;\nM1[[-1, -2]] = -1;\nM1 = (1/hx)*M1;",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Create H1 matrix *)\nH1 = M + M1;",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Remove first and last rows and columns from A, ba, and H1 *)\nA = A[[2 ;; -2, 2 ;; -2]];\nba = ba[[2 ;; -2]];\nH1 = H1[[2 ;; -2, 2 ;; -2]];",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Set the number of iterations *)\nite = 20;",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Initialize arrays for results *)\nalpha =Table[0, {ite}];\nua =Table[0, {n - 2}, {ite}];\nUa =Table[0, {n}, {ite}];\nfa =Table[0, {n}, {ite}];\nres =Table[0, {ite}];\nerr =Table[0, {ite}];\nL =Table[0, {ite}];\nLH =Table[0, {ite}];",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Perform iterations *)\nFor[k = 1, k <= ite, k++,\n  alpha[[k]] = 10^(-k);\n  ua[[All, k]] = LinearSolve[A + alpha[[k]]*H1, ba];\n  Ua[[All, k]] = Join[{0}, ua[[All, k]], {0}];\n  fa[[All, k]] = Ua[[All, k]] + VExact;\n  res[[k]] = Sqrt[trapz[(Aphi[[All, All, k]].fa[[All, k]] - gDelta)^2, {y, Y1, Y2}]];\n  err[[k]] = Sqrt[trapz[(fa[[All, k]] - fExact)^2, x]];\n  L[[k]] = Sqrt[trapz[fa[[All, k]]^2, x]]*res[[k]];\n  LH[[k]] = Sqrt[trapz[fa[[All, k]]^2 + Grad[fa[[All, k]], {x}][[1]]^2, x]]*res[[k]];\n  (* Plot the results *)\n  Print[ListLinePlot[{x, fExact, fa[[All, k]]}, PlotStyle -> {Automatic, Red, Blue}, \n     PlotLegends -> {\"Exact\", \"Approximated\"}, \n     PlotLabel -> \"alpha = \" <> ToString[alpha[[k]]]]];\n]\n",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Find the indices of minimum L and LH *)\nkl = FirstPosition[L, Min[L]][[1]];\nklh = FirstPosition[LH, Min[LH]][[1]];",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Calculate V and Rho *)\nV =Table[0, {ite}];\nFor[i = 1, i <= ite, i++,\n  VV = IdentityMatrix[m] - Aphi.Transpose[Aphi].Inverse[Transpose[Aphi].Aphi + alpha[[i]] IdentityMatrix[n - 2]].Transpose[Aphi];\n  V1 = Norm[VV.gDelta]^2;\n  V2 = Tr[VV]^2;\n  V[[i]] = V1/V2;\n]\n\nRho =Table[0, {ite}];\nFor[i = 1, i <= ite, i++,\n  Rho[[i]] = Norm[alpha[[i]] Inverse[Transpose[Aphi].Aphi + alpha[[i]] IdentityMatrix[n - 2]].fa[[All, i]]];\n]\n",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "(* Print the results *)\n{{\"L-curve+L^2\", \"L-curve+H^1\", \"GCV\", \"拟最优\"}, {kl, klh, FirstPosition[V, Min[V]][[1]], FirstPosition[Rho, Min[Rho]][[1]]}}\n",
+   "languageId": "wolfram",
+   "mime": "text/plain",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  }
+ ]
+}
